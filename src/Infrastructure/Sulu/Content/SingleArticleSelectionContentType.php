@@ -36,19 +36,18 @@ class SingleArticleSelectionContentType extends SimpleContentType implements Pre
 
         $dimensionAttributes = [
             'locale' => $property->getStructure()->getLanguageCode(),
-            'stage' => DimensionContentInterface::STAGE_DRAFT,
+            'stage' => DimensionContentInterface::STAGE_LIVE,
         ];
 
         return $this->articleRepository->getOneBy(
             filters: \array_merge(
                 [
                     'uuid' => $uuid,
-                    'load_ghost_content' => true,
                 ],
                 $dimensionAttributes,
             ),
             selects: [
-                ArticleRepositoryInterface::GROUP_SELECT_ARTICLE_ADMIN => true,
+                ArticleRepositoryInterface::GROUP_SELECT_ARTICLE_WEBSITE => true,
             ]);
     }
 

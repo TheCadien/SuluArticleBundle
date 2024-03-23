@@ -250,6 +250,7 @@ final class SuluArticleBundle extends AbstractBundle
             ->class(SingleArticleSelectionContentType::class)
             ->args([
                 new Reference('sulu_article.article_repository'),
+                new Reference('sulu_content.content_manager'),
                 new Reference('sulu_article.article_reference_store')
             ])
             ->tag('sulu.content.type', ['alias' => 'single_article_selection']);

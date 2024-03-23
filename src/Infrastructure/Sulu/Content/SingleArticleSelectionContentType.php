@@ -6,6 +6,7 @@ namespace Sulu\Article\Infrastructure\Sulu\Content;
 
 use Sulu\Article\Domain\Repository\ArticleRepositoryInterface;
 use Sulu\Article\Infrastructure\Doctrine\Repository\ArticleRepository;
+use Sulu\Bundle\ContentBundle\Content\Application\ContentManager\ContentManagerInterface;
 use Sulu\Bundle\ContentBundle\Content\Domain\Model\DimensionContentInterface;
 use Sulu\Bundle\WebsiteBundle\ReferenceStore\ReferenceStoreInterface;
 use Sulu\Component\Content\Compat\PropertyInterface;
@@ -15,15 +16,19 @@ use Sulu\Component\Content\SimpleContentType;
 class SingleArticleSelectionContentType extends SimpleContentType implements PreResolvableContentTypeInterface
 {
     private ArticleRepositoryInterface $articleRepository;
+    
+    private ContentManagerInterface $contentManager;
 
     public function __construct(
         ArticleRepositoryInterface $articleRepository,
+        ContentManagerInterface    $contentManager,
         ReferenceStoreInterface    $referenceStore,
     )
     {
         parent::__construct('Article');
 
         $this->articleRepository = $articleRepository;
+        $this->contentManager = $contentManager;
         $this->referenceStore = $referenceStore;
     }
 
@@ -39,7 +44,7 @@ class SingleArticleSelectionContentType extends SimpleContentType implements Pre
             'stage' => DimensionContentInterface::STAGE_LIVE,
         ];
 
-        return $this->articleRepository->getOneBy(
+        $article = $this->articleRepository->getOneBy(
             filters: \array_merge(
                 [
                     'uuid' => $uuid,
@@ -49,6 +54,10 @@ class SingleArticleSelectionContentType extends SimpleContentType implements Pre
             selects: [
                 ArticleRepositoryInterface::GROUP_SELECT_ARTICLE_WEBSITE => true,
             ]);
+
+
+        $dimensionContent = $this->contentManager->resolve($article, $dimensionAttributes);
+        return $this->contentManager->normalize($dimensionContent);
     }
 
     public function preResolve(PropertyInterface $property)

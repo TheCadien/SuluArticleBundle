@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sulu\Article\Infrastructure\Sulu\Content;
 
 use Sulu\Article\Domain\Repository\ArticleRepositoryInterface;
-use Sulu\Article\Infrastructure\Doctrine\Repository\ArticleRepository;
 use Sulu\Bundle\ContentBundle\Content\Application\ContentManager\ContentManagerInterface;
 use Sulu\Bundle\ContentBundle\Content\Domain\Model\DimensionContentInterface;
 use Sulu\Bundle\WebsiteBundle\ReferenceStore\ReferenceStoreInterface;
@@ -16,7 +15,7 @@ use Sulu\Component\Content\SimpleContentType;
 class SingleArticleSelectionContentType extends SimpleContentType implements PreResolvableContentTypeInterface
 {
     private ArticleRepositoryInterface $articleRepository;
-    
+
     private ContentManagerInterface $contentManager;
 
     public function __construct(

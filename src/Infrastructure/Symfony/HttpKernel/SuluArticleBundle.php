@@ -21,6 +21,7 @@ use Sulu\Article\Infrastructure\Sulu\Admin\ArticleAdmin;
 use Sulu\Article\Infrastructure\Sulu\Content\ArticleLinkProvider;
 use Sulu\Article\Infrastructure\Sulu\Content\ArticleSitemapProvider;
 use Sulu\Article\Infrastructure\Sulu\Content\ArticleTeaserProvider;
+use Sulu\Article\Infrastructure\Sulu\Content\SingleArticleSelectionContentType;
 use Sulu\Article\UserInterface\Controller\Admin\ArticleController;
 use Sulu\Bundle\ContentBundle\Content\Infrastructure\Sulu\Preview\ContentObjectProvider;
 use Sulu\Bundle\ContentBundle\Content\Infrastructure\Sulu\Search\ContentSearchMetadataProvider;
@@ -62,23 +63,23 @@ final class SuluArticleBundle extends AbstractBundle
     {
         $definition->rootNode()
             ->children()
-                ->arrayNode('objects')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->arrayNode('article')
-                            ->addDefaultsIfNotSet()
-                            ->children()
-                                ->scalarNode('model')->defaultValue(Article::class)->end()
-                            ->end()
-                        ->end()
-                        ->arrayNode('article_content')
-                            ->addDefaultsIfNotSet()
-                            ->children()
-                                ->scalarNode('model')->defaultValue(ArticleDimensionContent::class)->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                ->end()
+            ->arrayNode('objects')
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->arrayNode('article')
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->scalarNode('model')->defaultValue(Article::class)->end()
+            ->end()
+            ->end()
+            ->arrayNode('article_content')
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->scalarNode('model')->defaultValue(ArticleDimensionContent::class)->end()
+            ->end()
+            ->end()
+            ->end()
+            ->end()
             ->end();
     }
 
@@ -244,6 +245,14 @@ final class SuluArticleBundle extends AbstractBundle
         $services->set('sulu_article.article_reference_store')
             ->class(ReferenceStore::class)
             ->tag('sulu_website.reference_store', ['alias' => ArticleInterface::RESOURCE_KEY]);
+
+        $services->set('sulu_article.content_types.article_selection')
+            ->class(SingleArticleSelectionContentType::class)
+            ->args([
+                new Reference('sulu_article.article_repository'),
+                new Reference('sulu_article.article_reference_store')
+            ])
+            ->tag('sulu.content.type', ['alias' => 'single_article_selection']);
 
         $services->set('sulu_article.article_data_provider')
             ->class(ContentDataProvider::class) // TODO this should not be handled via Content Bundle instead own service which uses the ArticleRepository

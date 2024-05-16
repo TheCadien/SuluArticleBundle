@@ -63,7 +63,6 @@ final class SuluArticleBundle extends AbstractBundle
     {
         $definition->rootNode()
             ->children()
-            ->children()
                 ->arrayNode('objects')
                     ->addDefaultsIfNotSet()
                     ->children()

@@ -19,6 +19,7 @@ use Sulu\Article\Domain\Repository\ArticleRepositoryInterface;
 use Sulu\Article\Infrastructure\Doctrine\Repository\ArticleRepository;
 use Sulu\Article\Infrastructure\Sulu\Admin\ArticleAdmin;
 use Sulu\Article\Infrastructure\Sulu\Content\ArticleLinkProvider;
+use Sulu\Article\Infrastructure\Sulu\Content\ArticleSelectionContentType;
 use Sulu\Article\Infrastructure\Sulu\Content\ArticleSitemapProvider;
 use Sulu\Article\Infrastructure\Sulu\Content\ArticleTeaserProvider;
 use Sulu\Article\Infrastructure\Sulu\Content\SingleArticleSelectionContentType;
@@ -246,7 +247,7 @@ final class SuluArticleBundle extends AbstractBundle
             ->class(ReferenceStore::class)
             ->tag('sulu_website.reference_store', ['alias' => ArticleInterface::RESOURCE_KEY]);
 
-        $services->set('sulu_article.content_types.article_selection')
+        $services->set('sulu_article.content_types.single_article_selection')
             ->class(SingleArticleSelectionContentType::class)
             ->args([
                 new Reference('sulu_article.article_repository'),
@@ -254,6 +255,15 @@ final class SuluArticleBundle extends AbstractBundle
                 new Reference('sulu_article.article_reference_store')
             ])
             ->tag('sulu.content.type', ['alias' => 'single_article_selection']);
+
+        $services->set('sulu_article.content_types.article_selection')
+            ->class(ArticleSelectionContentType::class)
+            ->args([
+                new Reference('sulu_article.article_repository'),
+                new Reference('sulu_content.content_manager'),
+                new Reference('sulu_article.article_reference_store')
+            ])
+            ->tag('sulu.content.type', ['alias' => 'article_selection']);
 
         $services->set('sulu_article.article_data_provider')
             ->class(ContentDataProvider::class) // TODO this should not be handled via Content Bundle instead own service which uses the ArticleRepository
